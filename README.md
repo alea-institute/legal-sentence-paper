@@ -17,6 +17,7 @@ A pure Python implementation that extends the unsupervised Punkt algorithm with 
 - **Memory**: 432 MB
 - **No external dependencies**
 - **29-32% precision improvement** over standard tools like NLTK Punkt and spaCy
+- **Links**: [PyPI Package](https://pypi.org/project/nupunkt/) | [GitHub Repository](https://github.com/alea-institute/nupunkt)
 
 ### CharBoundary
 
@@ -25,6 +26,7 @@ A family of character-level machine learning models in three sizes (small, mediu
 - **Highest F1 score**: 0.782 (large model)
 - **Throughput**: 518K-748K characters per second depending on model size
 - **Requires only scikit-learn** and optional ONNX runtime integration
+- **Links**: [PyPI Package](https://pypi.org/project/charboundary/) | [GitHub Repository](https://github.com/alea-institute/charboundary)
 
 ## Why This Matters
 
@@ -59,6 +61,8 @@ This repository is organized to help you explore our research, replicate our res
 
 ### Installation
 
+#### Project Installation (for reproducing paper results)
+
 ```bash
 # Set up Python virtual environment
 uv venv --seed && uv pip install pip && source .venv/bin/activate
@@ -67,6 +71,17 @@ uv venv --seed && uv pip install pip && source .venv/bin/activate
 pip install -e .
 ```
 
+#### Using the Libraries in Your Projects
+
+Install NUPunkt:
+```bash
+pip install nupunkt
+```
+
+Install CharBoundary:
+```bash
+pip install charboundary
+```
 ### Usage Examples
 
 Test the tokenizers on legal examples:
