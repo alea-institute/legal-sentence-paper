@@ -1,0 +1,52 @@
+{
+  "nupunkt": {
+    "name": "nupunkt",
+    "initialization_time": 0.8836743831634521,
+    "initialization_options": {}
+  },
+  "nltk_punkt": {
+    "name": "nltk_punkt",
+    "initialization_time": 0.009869098663330078,
+    "initialization_options": {}
+  },
+  "spacy_sm": {
+    "name": "spacy_sm",
+    "initialization_time": 0.3703937530517578,
+    "initialization_options": {
+      "model": "en_core_web_sm"
+    }
+  },
+  "spacy_lg": {
+    "name": "spacy_lg",
+    "initialization_time": 1.447676658630371,
+    "initialization_options": {
+      "model": "en_core_web_lg"
+    }
+  },
+  "pysbd": {
+    "name": "pysbd",
+    "initialization_time": 9.059906005859375e-06,
+    "initialization_options": {}
+  },
+  "charboundary_small": {
+    "name": "charboundary_small",
+    "initialization_time": 0.47021031379699707,
+    "initialization_options": {
+      "size": "small"
+    }
+  },
+  "charboundary_medium": {
+    "name": "charboundary_medium",
+    "initialization_time": 2.0643866062164307,
+    "initialization_options": {
+      "size": "medium"
+    }
+  },
+  "charboundary_large": {
+    "name": "charboundary_large",
+    "initialization_time": 10.542652368545532,
+    "initialization_options": {
+      "size": "large"
+    }
+  }
+}

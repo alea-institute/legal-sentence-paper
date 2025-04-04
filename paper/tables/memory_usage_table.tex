@@ -1,0 +1,20 @@
+\begin{table*}[htbp!]
+\centering
+\caption{Memory Usage of Sentence Boundary Detection Methods}
+\label{tab:memory-usage}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Tokenizer} & \textbf{Init (MB)} & \textbf{Tokenize (MB)} & \textbf{Bulk (MB)} & \textbf{Total (MB)} \\
+\midrule
+NUPunkt & 229.72 & 200.89 & 202.43 & 432.15 \\
+NLTK Punkt & 285.39 & 174.21 & 174.25 & 459.63 \\
+spaCy (sm) & 540.52 & 431.77 & 690.55 & 1231.07 \\
+spaCy (lg) & 1060.02 & 1053.47 & 1307.31 & 2367.32 \\
+pySBD & 1076.31 & 432.29 & 432.75 & 1509.06 \\
+CharBoundary\_small & 518.77 & 506.91 & 507.07 & 1025.84 \\
+CharBoundary\_medium & 948.56 & 948.66 & 948.20 & 1896.75 \\
+CharBoundary\_large & 3402.06 & 2331.57 & 2331.87 & 5733.93 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+

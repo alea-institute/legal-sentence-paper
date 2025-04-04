@@ -1,0 +1,1 @@
+"""Example scripts for testing and demonstrating the Legal Sentence Paper (LSP) library."""

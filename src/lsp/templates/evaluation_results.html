@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    
+    <style>
+        .sentence-correct {
+            background-color: rgba(40, 167, 69, 0.2);
+            border-left: 3px solid #28a745;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sentence-incorrect {
+            background-color: rgba(220, 53, 69, 0.2);
+            border-left: 3px solid #dc3545;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sentence-missing {
+            background-color: rgba(255, 193, 7, 0.2);
+            border-left: 3px solid #ffc107;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tokenizer-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .metrics-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .example-text {
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .metrics-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        #summary-table th, #summary-table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .highest {
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .lowest {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid my-4">
+        <h1 class="mb-4">{{ title }}</h1>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Summary Results</h3>
+                    </div>
+                    <div class="card-body">
+                        <table id="summary-table" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Tokenizer</th>
+                                    <th>Dataset</th>
+                                    <th>Precision</th>
+                                    <th>Recall</th>
+                                    <th>F1</th>
+                                    <th>Accuracy</th>
+                                    <th>Time/Char (ms)</th>
+                                    <th>Time/Sent (ms)</th>
+                                    <th>Sentences</th>
+                                    <th>Characters</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in summary_table %}
+                                <tr>
+                                    <td>{{ row[0] }}</td>
+                                    <td>{{ row[1] }}</td>
+                                    <td class="{{ 'highest' if row[2] == highest_precision[row[1]] }}">{{ row[2] }}</td>
+                                    <td class="{{ 'highest' if row[3] == highest_recall[row[1]] }}">{{ row[3] }}</td>
+                                    <td class="{{ 'highest' if row[4] == highest_f1[row[1]] }}">{{ row[4] }}</td>
+                                    <td class="{{ 'highest' if row[5] == highest_accuracy[row[1]] }}">{{ row[5] }}</td>
+                                    <td class="{{ 'lowest' if row[6] == lowest_time_char[row[1]] }}">{{ row[6] }}</td>
+                                    <td class="{{ 'lowest' if row[7] == lowest_time_sent[row[1]] }}">{{ row[7] }}</td>
+                                    <td>{{ row[8] }}</td>
+                                    <td>{{ row[9] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Combined Results Across All Datasets</h3>
+                    </div>
+                    <div class="card-body">
+                        <table id="combined-table" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Tokenizer</th>
+                                    <th>Precision</th>
+                                    <th>Recall</th>
+                                    <th>F1</th>
+                                    <th>Accuracy</th>
+                                    <th>Total Sentences</th>
+                                    <th>Total Characters</th>
+                                    <th>Total Time (s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tokenizer, metrics in combined_results.items() %}
+                                <tr>
+                                    <td>{{ tokenizer }}</td>
+                                    <td class="{{ 'highest' if metrics.precision == highest_combined.precision }}">{{ metrics.precision }}</td>
+                                    <td class="{{ 'highest' if metrics.recall == highest_combined.recall }}">{{ metrics.recall }}</td>
+                                    <td class="{{ 'highest' if metrics.f1 == highest_combined.f1 }}">{{ metrics.f1 }}</td>
+                                    <td class="{{ 'highest' if metrics.accuracy == highest_combined.accuracy }}">{{ metrics.accuracy }}</td>
+                                    <td>{{ metrics.total_sentences }}</td>
+                                    <td>{{ metrics.total_characters }}</td>
+                                    <td>{{ metrics.total_time }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Visualization Charts Section -->
+        {% if chart_paths and chart_paths|length > 0 %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h3>Performance Visualizations</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="visualization-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="comparison-tab" data-bs-toggle="tab" data-bs-target="#comparison-charts" type="button" role="tab" aria-controls="comparison-charts" aria-selected="true">Comparison Charts</button>
+                            </li>
+                            {% if chart_paths.weighted_metrics %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="weighted-tab" data-bs-toggle="tab" data-bs-target="#weighted-charts" type="button" role="tab" aria-controls="weighted-charts" aria-selected="false">Weighted Metrics</button>
+                            </li>
+                            {% endif %}
+                            {% if chart_paths.tradeoff_f1_vs_throughput or chart_paths.tradeoff_precision_vs_throughput or chart_paths.tradeoff_recall_vs_throughput or chart_paths.tradeoff_precision_recall or chart_paths.tradeoff_f1_time_tradeoff %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tradeoff-tab" data-bs-toggle="tab" data-bs-target="#tradeoff-charts" type="button" role="tab" aria-controls="tradeoff-charts" aria-selected="false">Tradeoff Charts</button>
+                            </li>
+                            {% endif %}
+                            {% if chart_paths.dataset_comparison %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="dataset-comparison-tab" data-bs-toggle="tab" data-bs-target="#dataset-comparison-charts" type="button" role="tab" aria-controls="dataset-comparison-charts" aria-selected="false">Dataset Comparison</button>
+                            </li>
+                            {% endif %}
+                            {% if chart_paths.f1_heatmap or chart_paths.precision_heatmap or chart_paths.recall_heatmap or chart_paths.time_per_char_seconds_heatmap %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="heatmap-tab" data-bs-toggle="tab" data-bs-target="#heatmap-charts" type="button" role="tab" aria-controls="heatmap-charts" aria-selected="false">Heatmaps</button>
+                            </li>
+                            {% endif %}
+                        </ul>
+                        
+                        <div class="tab-content p-3 border border-top-0 rounded-bottom" id="visualization-tab-content">
+                            <!-- Comparison Charts -->
+                            <div class="tab-pane fade show active" id="comparison-charts" role="tabpanel" aria-labelledby="comparison-tab">
+                                <div class="row">
+                                    {% if chart_paths.f1 %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">F1 Score Comparison</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.f1 }}" alt="F1 Score Comparison" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths.precision %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Precision Comparison</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.precision }}" alt="Precision Comparison" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths.recall %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Recall Comparison</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.recall }}" alt="Recall Comparison" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths["time-per-char-seconds"] %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Time per Character Comparison</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths['time-per-char-seconds'] }}" alt="Time per Character Comparison" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths["time-per-sentence-seconds"] %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Time per Sentence Comparison</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths['time-per-sentence-seconds'] }}" alt="Time per Sentence Comparison" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Tradeoff Charts Section -->
+                            <div class="tab-pane fade" id="tradeoff-charts" role="tabpanel" aria-labelledby="tradeoff-tab">
+                                <div class="row">
+                                    {% if chart_paths.tradeoff_f1_vs_throughput or chart_paths.tradeoff_f1_time_tradeoff %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">F1 Score vs. Performance Tradeoff</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.tradeoff_f1_vs_throughput or chart_paths.tradeoff_f1_time_tradeoff }}" alt="F1 Score vs. Performance Tradeoff" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths.tradeoff_precision_vs_throughput %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Precision vs. Performance Tradeoff</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.tradeoff_precision_vs_throughput }}" alt="Precision vs. Performance Tradeoff" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths.tradeoff_recall_vs_throughput %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Recall vs. Performance Tradeoff</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.tradeoff_recall_vs_throughput }}" alt="Recall vs. Performance Tradeoff" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths.tradeoff_precision_recall or chart_paths.tradeoff_precision_recall_tradeoff %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Precision-Recall Tradeoff</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.tradeoff_precision_recall or chart_paths.tradeoff_precision_recall_tradeoff }}" alt="Precision-Recall Tradeoff" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Dataset Comparison Charts -->
+                            <div class="tab-pane fade" id="dataset-comparison-charts" role="tabpanel" aria-labelledby="dataset-comparison-tab">
+                                <div class="row">
+                                    {% if chart_paths.dataset_comparison %}
+                                    <div class="col-12 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Dataset Comparison</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.dataset_comparison }}" alt="Dataset Comparison" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Weighted Metrics Charts -->
+                            {% if chart_paths.weighted_metrics %}
+                            <div class="tab-pane fade" id="weighted-charts" role="tabpanel" aria-labelledby="weighted-tab">
+                                <div class="row">
+                                    <div class="col-12 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Dataset Size Weighted Metrics</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.weighted_metrics }}" alt="Weighted Metrics" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Heatmap Charts -->
+                            <div class="tab-pane fade" id="heatmap-charts" role="tabpanel" aria-labelledby="heatmap-tab">
+                                <div class="row">
+                                    {% if chart_paths.f1_heatmap %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">F1 Score Heatmap</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.f1_heatmap }}" alt="F1 Score Heatmap" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths.precision_heatmap %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Precision Heatmap</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.precision_heatmap }}" alt="Precision Heatmap" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths.recall_heatmap %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Recall Heatmap</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.recall_heatmap }}" alt="Recall Heatmap" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if chart_paths.time_per_char_seconds_heatmap %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-header">Performance Time Heatmap</div>
+                                            <div class="card-body text-center">
+                                                <img src="{{ chart_paths.time_per_char_seconds_heatmap }}" alt="Time per Character Heatmap" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% for dataset_name, dataset_results in dataset_details.items() %}
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h2>Dataset: {{ dataset_name }}</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="dataset-{{ dataset_name | replace(' ', '_') }}-tabs" role="tablist">
+                            {% for tokenizer_name in dataset_results.keys() %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ 'active' if loop.first }}" 
+                                        id="tokenizer-{{ tokenizer_name | replace(' ', '_') }}-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#dataset-{{ dataset_name | replace(' ', '_') }}-tokenizer-{{ tokenizer_name | replace(' ', '_') }}" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="tokenizer-{{ tokenizer_name | replace(' ', '_') }}" 
+                                        aria-selected="{{ 'true' if loop.first else 'false' }}">
+                                    {{ tokenizer_name }}
+                                </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        
+                        <div class="tab-content" id="dataset-{{ dataset_name | replace(' ', '_') }}-tab-content">
+                            {% for tokenizer_name, examples in dataset_results.items() %}
+                            <div class="tab-pane fade {{ 'show active' if loop.first }}" 
+                                 id="dataset-{{ dataset_name | replace(' ', '_') }}-tokenizer-{{ tokenizer_name | replace(' ', '_') }}" 
+                                 role="tabpanel" 
+                                 aria-labelledby="tokenizer-{{ tokenizer_name | replace(' ', '_') }}-tab">
+                                
+                                <div class="row mt-4">
+                                    <div class="col-md-3">
+                                        <div class="card metrics-card">
+                                            <div class="card-header bg-light">
+                                                <h5>Precision</h5>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <span class="metrics-value">{{ tokenizer_metrics[dataset_name][tokenizer_name]['precision'] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card metrics-card">
+                                            <div class="card-header bg-light">
+                                                <h5>Recall</h5>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <span class="metrics-value">{{ tokenizer_metrics[dataset_name][tokenizer_name]['recall'] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card metrics-card">
+                                            <div class="card-header bg-light">
+                                                <h5>F1 Score</h5>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <span class="metrics-value">{{ tokenizer_metrics[dataset_name][tokenizer_name]['f1'] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card metrics-card">
+                                            <div class="card-header bg-light">
+                                                <h5>Time/Sentence</h5>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <span class="metrics-value">{{ tokenizer_metrics[dataset_name][tokenizer_name]['time_per_sentence'] }} ms</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <h4>Example Results</h4>
+                                        
+                                        <div class="accordion" id="accordion-{{ dataset_name | replace(' ', '_') }}-{{ tokenizer_name | replace(' ', '_') }}">
+                                            {% for example in examples %}
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="heading-{{ dataset_name | replace(' ', '_') }}-{{ tokenizer_name | replace(' ', '_') }}-{{ loop.index }}">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ dataset_name | replace(' ', '_') }}-{{ tokenizer_name | replace(' ', '_') }}-{{ loop.index }}" aria-expanded="false" aria-controls="collapse-{{ dataset_name | replace(' ', '_') }}-{{ tokenizer_name | replace(' ', '_') }}-{{ loop.index }}">
+                                                        Example {{ loop.index }} - Precision: {{ example.metrics.precision | round(2) }}, Recall: {{ example.metrics.recall | round(2) }}, F1: {{ example.metrics.f1 | round(2) }}
+                                                    </button>
+                                                </h2>
+                                                <div id="collapse-{{ dataset_name | replace(' ', '_') }}-{{ tokenizer_name | replace(' ', '_') }}-{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ dataset_name | replace(' ', '_') }}-{{ tokenizer_name | replace(' ', '_') }}-{{ loop.index }}" data-bs-parent="#accordion-{{ dataset_name | replace(' ', '_') }}-{{ tokenizer_name | replace(' ', '_') }}">
+                                                    <div class="accordion-body">
+                                                        <h5>Original Text</h5>
+                                                        <div class="example-text">{{ example.text }}</div>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <h5>Expected Sentences ({{ example.true_sentences | length }})</h5>
+                                                                <div class="list-group">
+                                                                    {% for sentence in example.true_sentences %}
+                                                                    <div class="list-group-item">{{ sentence }}</div>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <h5>Predicted Sentences ({{ example.pred_sentences | length }})</h5>
+                                                                <div class="list-group">
+                                                                    {% for sentence in example.sentence_analysis %}
+                                                                    <div class="list-group-item sentence-{{ sentence.status }}">
+                                                                        {{ sentence.text }}
+                                                                        <small class="d-block text-muted mt-1">
+                                                                            {{ sentence.status }}
+                                                                        </small>
+                                                                    </div>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- JavaScript dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // DataTable configuration options
+            const tableOptions = {
+                pageLength: 25,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                language: {
+                    search: "Filter:",
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries"
+                },
+                responsive: true
+            };
+            
+            // Initialize main summary table
+            $('#summary-table').DataTable({
+                ...tableOptions,
+                order: [[4, "desc"]]  // Sort by F1 score by default
+            });
+            
+            // Initialize combined results table
+            $('#combined-table').DataTable({
+                ...tableOptions,
+                order: [[3, "desc"]]  // Sort by F1 score by default
+            });
+            
+            // Ensure all tables have sorting enabled
+            $('.table').each(function() {
+                const tableId = $(this).attr('id');
+                // Only initialize tables that haven't been initialized yet
+                if (tableId && !$.fn.DataTable.isDataTable('#' + tableId)) {
+                    $('#' + tableId).DataTable(tableOptions);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

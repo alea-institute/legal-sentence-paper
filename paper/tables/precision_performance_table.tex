@@ -1,0 +1,56 @@
+\begin{table*}[htbp!]
+\centering
+\caption{Sentence Boundary Detection Performance on Legal Texts by Dataset}
+\label{tab:sbd-precision-performance}
+\begin{tabular}{llrrrr}
+\toprule
+Dataset & Model & \textbf{Precision} & Chars/sec & F1 & Recall \\
+\midrule
+ALEA SBD Benchmark & NUPunkt & 0.918 & 10.00M & 0.842 & 0.778 \\
+ & CharBoundary_large & 0.637 & 518.06K & 0.727 & 0.847 \\
+ & CharBoundary_medium & 0.631 & 586.62K & 0.722 & 0.842 \\
+ & CharBoundary_small & 0.624 & 748.36K & 0.718 & 0.845 \\
+ & NLTK Punkt & 0.537 & 9.09M & 0.646 & 0.811 \\
+ & spaCy (lg) & 0.517 & 90.93K & 0.572 & 0.640 \\
+ & spaCy (sm) & 0.516 & 96.51K & 0.573 & 0.644 \\
+ & pySBD & 0.468 & 258.37K & 0.627 & 0.948 \\
+\midrule
+SCOTUS & CharBoundary_large & 0.950 & 1.16M & 0.778 & 0.658 \\
+ & CharBoundary_medium & 0.938 & 1.36M & 0.775 & 0.661 \\
+ & CharBoundary_small & 0.926 & 1.35M & 0.773 & 0.664 \\
+ & NUPunkt & 0.847 & 4.75M & 0.570 & 0.429 \\
+ & spaCy (sm) & 0.825 & 110.13K & 0.761 & 0.706 \\
+ & spaCy (lg) & 0.819 & 78.48K & 0.753 & 0.696 \\
+ & pySBD & 0.799 & 284.47K & 0.817 & 0.835 \\
+ & NLTK Punkt & 0.710 & 11.03M & 0.760 & 0.817 \\
+\midrule
+Cyber Crime & CharBoundary_large & 0.968 & 698.33K & 0.853 & 0.762 \\
+ & CharBoundary_medium & 0.961 & 797.32K & 0.853 & 0.767 \\
+ & CharBoundary_small & 0.939 & 806.91K & 0.837 & 0.755 \\
+ & NUPunkt & 0.901 & 11.29M & 0.591 & 0.439 \\
+ & spaCy (sm) & 0.842 & 106.00K & 0.776 & 0.720 \\
+ & pySBD & 0.831 & 216.49K & 0.833 & 0.835 \\
+ & spaCy (lg) & 0.830 & 94.07K & 0.769 & 0.717 \\
+ & NLTK Punkt & 0.748 & 10.40M & 0.782 & 0.819 \\
+\midrule
+BVA & NUPunkt & 0.987 & 14.77M & 0.608 & 0.440 \\
+ & CharBoundary_large & 0.963 & 991.14K & 0.881 & 0.813 \\
+ & CharBoundary_medium & 0.957 & 1.25M & 0.875 & 0.806 \\
+ & CharBoundary_small & 0.937 & 1.40M & 0.870 & 0.812 \\
+ & pySBD & 0.795 & 217.58K & 0.857 & 0.929 \\
+ & spaCy (sm) & 0.750 & 109.73K & 0.563 & 0.451 \\
+ & spaCy (lg) & 0.720 & 114.30K & 0.554 & 0.450 \\
+ & NLTK Punkt & 0.696 & 11.34M & 0.775 & 0.875 \\
+\midrule
+Intellectual Property & CharBoundary_large & 0.954 & 791.24K & 0.890 & 0.834 \\
+ & CharBoundary_medium & 0.948 & 937.46K & 0.889 & 0.837 \\
+ & CharBoundary_small & 0.927 & 980.53K & 0.883 & 0.843 \\
+ & NUPunkt & 0.912 & 13.01M & 0.595 & 0.442 \\
+ & spaCy (sm) & 0.852 & 91.09K & 0.802 & 0.757 \\
+ & spaCy (lg) & 0.839 & 92.16K & 0.792 & 0.749 \\
+ & pySBD & 0.829 & 255.15K & 0.860 & 0.894 \\
+ & NLTK Punkt & 0.724 & 10.65M & 0.781 & 0.847 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+

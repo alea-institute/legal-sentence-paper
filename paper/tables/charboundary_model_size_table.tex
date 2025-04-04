@@ -1,0 +1,15 @@
+\begin{table}[htbp!]
+\centering
+\caption{CharBoundary Model Size Comparison}
+\label{tab:charboundary-model-size}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Model} & \textbf{SKOPS Size} & \textbf{ONNX Size} & \textbf{Memory Usage} & \textbf{Throughput} \\
+\textbf{Variant} & \textbf{(MB)} & \textbf{(MB)} & \textbf{(MB)} & \textbf{(chars/sec)} \\
+\midrule
+Small & 3.0 & 0.5 & 1,025.84 & $\sim$748K \\
+Medium & 13.0 & 2.6 & 1,896.75 & $\sim$586K \\
+Large & 60.0 & 13.0 & 5,733.93 & $\sim$518K \\
+\bottomrule
+\end{tabular}
+\end{table}

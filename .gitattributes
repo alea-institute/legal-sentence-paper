@@ -1,0 +1,6 @@
+results/paper_results_20250402_203406/evaluation_report.html filter=lfs diff=lfs merge=lfs -text
+results/paper_results_20250402_203406/evaluation_results.json filter=lfs diff=lfs merge=lfs -text
+data/MultiLegalSBD/CD_intellectual_property.jsonl filter=lfs diff=lfs merge=lfs -text
+data/MultiLegalSBD/CD_scotus.jsonl filter=lfs diff=lfs merge=lfs -text
+data/MultiLegalSBD/CD_cyber_crime.jsonl filter=lfs diff=lfs merge=lfs -text
+data/alea-legal-benchmark/train.jsonl filter=lfs diff=lfs merge=lfs -text

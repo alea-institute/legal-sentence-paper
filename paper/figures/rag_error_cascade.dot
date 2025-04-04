@@ -1,0 +1,98 @@
+digraph RAG_Error_Cascade {
+  rankdir=LR;
+  node [shape=box, style="rounded,filled", fillcolor="#E8F4FA", fontname="Arial", fontsize=16, margin="0.3,0.2", penwidth=1.5];
+  edge [fontname="Arial", fontsize=16, penwidth=1.8, arrowsize=1.2, color="#666666"];
+  
+  // Define graph styling - use splines=true for nicer curves with labels
+  graph [fontname="Arial", fontsize=28, fontcolor="#333333", splines=true, nodesep=1.5, ranksep=3.0];
+  
+  // Define nodes
+  input [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="22"><B>Legal Document</B></FONT></TD></TR>
+        <TR><TD><FONT POINT-SIZE="18">Employee's Annual Bonus shall be calculated<BR/>pursuant to Sec. 4.3(c), subject to the<BR/>limitations of I.R.C. § 409A(a)(2)(B)(i) and<BR/>the withholding requirements of Sec. 7.3.</FONT></TD></TR></TABLE>>, 
+        fillcolor="#A7E8A7", shape=box, style="rounded,filled", height=1.8, width=4.0];
+  
+  // Standard SBD Approach
+  subgraph cluster_standard {
+    label=<<FONT POINT-SIZE="24"><B>Standard SBD</B></FONT>>;
+    color="white";
+    style="";
+    penwidth=2.2;
+    margin=35;
+    width=14;
+    
+    bad_sbd [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="22"><B>Low Precision SBD</B></FONT></TD></TR>
+            <TR><TD><FONT POINT-SIZE="20">(70-80%)</FONT></TD></TR></TABLE>>, 
+            fillcolor="#FFCECE", height=1.2, width=3.0];
+            
+    bad_chunks [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+                <TR><TD COLSPAN="3"><FONT POINT-SIZE="22"><B>Fragmented Chunks</B></FONT></TD></TR>
+                <TR><TD ALIGN="LEFT" PORT="f1"><FONT POINT-SIZE="18">Employee's Annual Bonus shall be calculated<BR/>pursuant to Sec.</FONT></TD></TR>
+                </TABLE>>, 
+                fillcolor="#FFCECE", height=1.8, width=4.2];
+                
+    bad_reasoning [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+                  <TR><TD><FONT POINT-SIZE="22"><B>Reasoning Failure</B></FONT></TD></TR>
+                  <TR><TD><FONT POINT-SIZE="18">"Unable to determine applicable<BR/>tax code provision or connect<BR/>with contract section references"</FONT></TD></TR>
+                  </TABLE>>, 
+                  fillcolor="#FFCECE", shape=diamond, height=2.0, width=3.5];
+                  
+    // Add edge labels as separate nodes
+    edge1 [shape=none, label=<<FONT POINT-SIZE="18"><B>False splits at periods</B></FONT>>, fontcolor="#FF5555", fillcolor=transparent];
+    edge2 [shape=none, label=<<FONT POINT-SIZE="18"><B>Missing section references</B></FONT>>, fontcolor="#FF5555", fillcolor=transparent];
+  }
+  
+  // Our Approach
+  subgraph cluster_ours {
+    label=<<FONT POINT-SIZE="24"><B>Our Approach</B></FONT>>;
+    color="white";
+    style="";
+    penwidth=2.2;
+    margin=35;
+    width=14;
+    
+    good_sbd [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0"><TR><TD><FONT POINT-SIZE="22"><B>High Precision SBD</B></FONT></TD></TR>
+             <TR><TD><FONT POINT-SIZE="20">(95-99%)</FONT></TD></TR></TABLE>>, 
+             fillcolor="#CEFFCE", height=1.2, width=3.0];
+             
+    good_chunks [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+                <TR><TD COLSPAN="3"><FONT POINT-SIZE="22"><B>Coherent Chunks</B></FONT></TD></TR>
+                <TR><TD ALIGN="LEFT" PORT="f1"><FONT POINT-SIZE="18">Employee's Annual Bonus shall be calculated<BR/>pursuant to Sec. 4.3(c), subject to the<BR/>limitations of I.R.C. § 409A(a)(2)(B)(i) and<BR/>the withholding requirements of Sec. 7.3.</FONT></TD></TR>
+                </TABLE>>, 
+                fillcolor="#CEFFCE", height=2.0, width=4.2];
+                   
+    good_reasoning [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+                   <TR><TD><FONT POINT-SIZE="22"><B>Correct Reasoning</B></FONT></TD></TR>
+                   <TR><TD><FONT POINT-SIZE="18">"Bonus calculation under Sec. 4.3(c)<BR/>is subject to IRS deferred compensation<BR/>six-month delay rule in § 409A"</FONT></TD></TR>
+                   </TABLE>>, 
+                   fillcolor="#CEFFCE", shape=diamond, height=2.0, width=3.5];
+                   
+    // Add edge labels as separate nodes
+    edge3 [shape=none, label=<<FONT POINT-SIZE="18"><B>Preserves section references</B></FONT>>, fontcolor="#55AA55", fillcolor=transparent];
+    edge4 [shape=none, label=<<FONT POINT-SIZE="18"><B>Complete context maintained</B></FONT>>, fontcolor="#55AA55", fillcolor=transparent];
+  }
+  
+  // Position edge labels
+  {rank=same; bad_sbd; edge1;}
+  {rank=same; bad_chunks; edge2;}
+  {rank=same; good_sbd; edge3;}
+  {rank=same; good_chunks; edge4;}
+  
+  edge1 -> bad_chunks [style=invis];
+  edge2 -> bad_reasoning [style=invis];
+  edge3 -> good_chunks [style=invis];
+  edge4 -> good_reasoning [style=invis];
+  
+  // Connect nodes without labels - we'll use separate nodes for labels
+  input -> bad_sbd [color="#FF5555", penwidth=2.2];
+  input -> good_sbd [color="#55AA55", penwidth=2.2];
+  
+  bad_sbd -> bad_chunks [color="#FF5555", penwidth=2.2];
+  bad_chunks -> bad_reasoning [color="#FF5555", penwidth=2.2];
+  
+  good_sbd -> good_chunks [color="#55AA55", penwidth=2.2];
+  good_chunks -> good_reasoning [color="#55AA55", penwidth=2.2];
+  
+  // Add label
+  labelloc="t";
+  label=<<FONT POINT-SIZE="32"><B>Error Cascade in Legal RAG Pipelines</B></FONT>>;
+}

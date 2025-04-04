@@ -1,0 +1,34 @@
+\section{Results}
+
+Table~\ref{tab:main-results} presents our aggregate evaluation results across all models and datasets, ordered by precision. \textit{NUPunkt} achieves the highest precision (0.911) while maintaining exceptional throughput (10M chars/sec) with modest memory requirements (432 MB). The \textit{CharBoundary} model family achieves the best overall F1 scores (0.773-0.782), offering excellent balance between precision (0.746-0.763) and recall (0.803).
+
+\begin{table}[t]
+\centering
+\caption{Performance and Resource Efficiency of Sentence Boundary Detection Methods}
+\label{tab:main-results}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Model} & \textbf{Precision} & \textbf{F1} & \textbf{Throughput} & \textbf{Memory} \\
+ & & & \textbf{(chars/sec)} & \textbf{(MB)} \\
+\midrule
+NUPunkt & 0.911 & 0.725 & 10M & 432 \\
+CharBoundary (L) & 0.763 & 0.782 & 518K & 5,734 \\
+CharBoundary (M) & 0.757 & 0.779 & 587K & 1,897 \\
+CharBoundary (S) & 0.746 & 0.773 & 748K & 1,026 \\
+spaCy (sm) & 0.647 & 0.657 & 97K & 1,231 \\
+spaCy (lg) & 0.643 & 0.652 & 91K & 2,367 \\
+NLTK Punkt & 0.621 & 0.708 & 9M & 460 \\
+pySBD & 0.593 & 0.716 & 258K & 1,509 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For applications where precision is paramount, such as legal RAG systems, \textit{NUPunkt}'s exceptional precision with minimal computational overhead makes it particularly attractive. In contrast, \textit{pySBD} shows the highest recall (0.905) but with much lower precision (0.593), making it less suitable for precision-critical legal applications.
+
+\subsection{Performance Analysis}
+
+In terms of throughput, \textit{NUPunkt} processes text at sub-millisecond speeds (10 million characters per second), substantially faster than other approaches. This performance enables processing multi-million document collections in minutes rather than hours.
+
+Both libraries run efficiently on standard CPU hardware without requiring specialized accelerators, making them deployable across varied environments including cloud, edge, and low-resource settings. \textit{NUPunkt} is implemented in pure Python with zero external dependencies, while \textit{CharBoundary} relies only on scikit-learn and optional ONNX runtime integration for optimized performance. Both libraries are available under the MIT license. The character-per-second metrics scale linearly with document length, allowing for accurate estimation of processing time requirements for large legal document corpora.
+
+Detailed dataset-specific performance metrics are presented in Appendix \ref{appendix:DetailedResults}, with additional visualizations in Appendix \ref{appendix:Figures}. Dataset-specific results show that \textit{NUPunkt} achieves exceptional precision on BVA documents (0.987) and ALEA Legal Benchmark texts (0.918), while \textit{CharBoundary} models excel on specialized legal domains like Cyber Crime cases (0.968) and Intellectual Property cases (0.954).

@@ -1,0 +1,56 @@
+{
+  "timestamp": 1743772377.7883236,
+  "configuration": {
+    "dataset_limit": 3
+  },
+  "results": {
+    "nupunkt": {
+      "initialization_memory_mb": 229.72265625,
+      "tokenization_memory_mb": 200.88671875,
+      "bulk_tokenization_memory_mb": 202.4296875,
+      "total_memory_mb": 432.15234375
+    },
+    "nltk_punkt": {
+      "initialization_memory_mb": 285.38671875,
+      "tokenization_memory_mb": 174.20703125,
+      "bulk_tokenization_memory_mb": 174.24609375,
+      "total_memory_mb": 459.6328125
+    },
+    "spacy_sm": {
+      "initialization_memory_mb": 540.51953125,
+      "tokenization_memory_mb": 431.7734375,
+      "bulk_tokenization_memory_mb": 690.55078125,
+      "total_memory_mb": 1231.0703125
+    },
+    "spacy_lg": {
+      "initialization_memory_mb": 1060.015625,
+      "tokenization_memory_mb": 1053.46875,
+      "bulk_tokenization_memory_mb": 1307.30859375,
+      "total_memory_mb": 2367.32421875
+    },
+    "pysbd": {
+      "initialization_memory_mb": 1076.30859375,
+      "tokenization_memory_mb": 432.28515625,
+      "bulk_tokenization_memory_mb": 432.75390625,
+      "total_memory_mb": 1509.0625
+    },
+    "charboundary_small": {
+      "initialization_memory_mb": 518.765625,
+      "tokenization_memory_mb": 506.9140625,
+      "bulk_tokenization_memory_mb": 507.0703125,
+      "total_memory_mb": 1025.8359375
+    },
+    "charboundary_medium": {
+      "initialization_memory_mb": 948.55859375,
+      "tokenization_memory_mb": 948.6640625,
+      "bulk_tokenization_memory_mb": 948.1953125,
+      "total_memory_mb": 1896.75390625
+    },
+    "charboundary_large": {
+      "initialization_memory_mb": 3402.05859375,
+      "tokenization_memory_mb": 2331.57421875,
+      "bulk_tokenization_memory_mb": 2331.87109375,
+      "total_memory_mb": 5733.9296875
+    }
+  }
+}

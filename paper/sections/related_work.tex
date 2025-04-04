@@ -1,0 +1,14 @@
+\section{Related Work}
+ 
+\subsection{Sentence Boundary Detection Methods}
+Sentence boundary detection approaches can be categorized into rule-based methods and machine learning approaches. NLTK's punkt tokenizer \cite{kiss2006unsupervised} uses unsupervised learning with collocation detection for abbreviations, while modern systems like spaCy \cite{spacy} and pySBD \cite{sadvilkar2020pysbd} implement both statistical and neural approaches. Deep learning methods using BiLSTMs and transformers \cite{chen-2019-bert} represent recent advances, though with higher computational requirements.
+
+\subsection{Legal Text Processing Challenges}
+Legal text introduces unique challenges due to domain-specific structures including citations (e.g., \textit{United States v. Carroll Towing Co.}, 159 F.2d 169 (2d Cir. 1947)), specialized abbreviations, and hierarchical formatting. Sanchez \cite{sanchez2019sentence} found general-purpose SBD methods suffer accuracy reductions in legal text. These failures have cascading impacts on downstream legal NLP tasks such as information extraction \cite{chalkidis2018obligation}, document classification \cite{chalkidis2019deep}, and named entity recognition \cite{leitner2019fine}.
+
+\subsection{Domain-Adapted SBD for Legal Text}
+Previous work on specialized legal SBD includes Savelka et al. \cite{savelka2017}, who achieved 96\% F1-score using CRF models on legal decisions. Sheik et al. \cite{sheik2022} found CNN-based approaches offered the best balance of performance (97.7\% F1) and efficiency, outperforming even transformer models while operating 80 times faster than CRF approaches. Most recently, Brugger et al. \cite{multilegalSBD} introduced MultiLegalSBD with over 130,000 annotated sentences across six languages.
+
+\subsection{Limitations of Current Approaches}
+Despite these advances, existing methods face notable constraints. Most methods tend to compromise either accuracy or efficiency, often demanding considerable computational resources or extensive feature engineering. Additionally, there is limited exploration of precision/recall tradeoffs, with the majority of techniques prioritizing F1-score maximization over the precision essential for retrieval-augmented generation (RAG) applications. Furthermore, insufficient focus has been given to throughput considerations, which are crucial for efficiently processing large legal corpora.
+

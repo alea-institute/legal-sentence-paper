@@ -1,0 +1,63 @@
+\section{Methods}
+ 
+\subsection{NUPunkt}
+\textit{NUPunkt} is an unsupervised domain-adapted SBD system built upon the statistical approach of the Punkt algorithm \cite{kiss2006unsupervised}. It extends the original algorithm's ability to identify sentence boundaries through contextual analysis and abbreviation detection, while introducing specialized handling for legal-specific conventions that frequently confound general-purpose systems.
+
+\textit{NUPunkt} operates through a two-phase process: training and runtime tokenization. In the training phase, it learns to distinguish sentence boundaries from non-boundaries through unsupervised corpus analysis. Unlike supervised approaches that require annotated data, \textit{NUPunkt}'s unsupervised nature allows it to adapt to new legal domains without manual annotation.
+
+The statistical approach analyzes co-occurrence patterns of tokens and potential boundary markers, which is particularly effective for legal text where domain-specific abbreviations are abundant but follow consistent patterns within specific subdomains of law.
+
+\textit{NUPunkt}  introduces three key innovations that significantly enhance the processing of legal texts.  First, it features an extensive legal knowledge base that includes over 4,000 domain-specific abbreviations, meticulously organized into categories such as court names, statutes, and Latin phrases, providing a robust foundation for understanding the nuanced terminology inherent in legal documents.  Second, it offers specialized handling of legal structural elements, including management of hierarchical enumeration, complex citations, and multi-sentence quotations.  Third, NUPunkt employs statistical collocation detection, trained on the KL3M legal corpus, to identify multi-word expressions that may span potential boundary punctuation, enabling the system to capture critical legal phrases and concepts that might otherwise be fragmented by conventional text processing methods.  Together, these advancements make NUPunkt a powerful tool for navigating the complexities of legal language with precision and depth.
+
+For complete implementation details, see Appendix \ref{appendix:NUPunkt} and the source code in \texttt{alea-institute/NUPunkt}.
+
+\subsection{CharBoundary}
+\textit{CharBoundary} operates at the character level rather than the token level. This perspective shift addresses the observation that traditional token-based approaches struggle with complex formatting and specialized punctuation patterns in legal documents, while character contexts provide more robust signals.
+
+The model analyzes the local character context surrounding potential boundary markers (e.g., periods, question marks, exclamation points) to make accurate boundary decisions. Operating directly on the character stream allows the model to incorporate fine-grained typographical and structural features that would be lost in token-based representations.
+
+We frame SBD as a binary classification problem using a \textit{Random Forest} classifier \cite{breiman2001random} that considers character-level contextual features and domain-specific knowledge. Our feature representations capture structural and semantic patterns common in legal text, including character type transitions, legal abbreviation markers, citation structures, and document hierarchy signals.  The model was trained on the ALEA SBD dataset \cite{alea-benchmark}, which provides high-quality sentence boundary labels across diverse legal documents.
+
+\textit{CharBoundary} introduces a set of tailored adaptations designed specifically for the legal domain.  A key highlight of CharBoundary is its abbreviation detection capability, which draws on an extensive database containing over 4,000 legal abbreviations and citation structures, enabling it to precisely recognize and decode the specialized shorthand and referencing practices commonly found in legal documents.  Additionally, \textit{CharBoundary} incorporates probability scores that empower agentic systems to dynamically adjust boundary detection thresholds based on downstream performance, ensuring flexibility and optimization in processing complex legal documents.  These enhancements collectively enable \textit{CharBoundary} to address the unique challenges of legal text analysis with a high degree of precision and adaptability.
+
+\textit{CharBoundary} provides models of varying sizes to accommodate different deployment requirements. The small model requires only 3MB of storage (0.5MB in ONNX format), while the medium and large models offer increasing accuracy at the cost of larger storage requirements. A detailed comparison of model sizes and memory usage is provided in Table~\ref{tab:charboundary-model-size} in Appendix~\ref{appendix:CharBoundary}.
+
+Complete implementation details are available in Appendix \ref{appendix:CharBoundary}.
+
+\subsection{Method Comparison and Selection Guide}
+To aid users in selecting the appropriate library for their specific legal text processing needs, we provide a comprehensive comparison of key features and recommended use cases. Table \ref{tab:method-comparison} summarizes the distinctive characteristics and trade-offs between \textit{NUPunkt} and \textit{CharBoundary}.
+
+\begin{table*}[htbp!]
+\centering
+\small
+\begin{tabular}{p{2.2cm}|p{6.3cm}|p{6.3cm}}
+\hline
+\textbf{Feature} & \textbf{NUPunkt} & \textbf{CharBoundary} \\
+\hline
+Approach & Unsupervised statistical & Supervised machine learning \\
+\hline
+Level & Token-based & Character-based \\
+\hline
+Dependencies & Pure Python, zero external dependencies & Scikit-learn or ONNX \\
+\hline
+Performance optimization & Profiling for single-threaded CPU execution & Hyperparameter tuning and ONNX optimization \\
+\hline
+Throughput & 10M chars/sec & 518K-748K chars/sec \\
+\hline
+Best for & Maximum throughput, citation-heavy documents, restricted environments & Flexibility across legal subdomains, adjustable precision/recall \\
+\hline
+Variants & Single model & Small, medium, large models \\
+\hline
+Adaptability & Requires retraining on new domain & Supports runtime threshold adjustment \\
+\hline
+\end{tabular}
+\caption{Comparison of NUPunkt and CharBoundary features and use cases}
+\label{tab:method-comparison}
+\end{table*}
+
+\subsection{Error Reduction Impact}
+Both libraries address the inverse exponential relationship between precision and fragmentation errors highlighted in the introduction. Each percentage point improvement in boundary detection precision prevents multiple downstream errors, creating cascading benefits throughout the retrieval pipeline. Since a single boundary error can fragment critical legal concepts and cause multiple reasoning failures, our precision-oriented approach directly targets this non-linear error propagation effect.
+
+\subsection{CPU Efficiency Implementation}
+Through extensive profiling, we identified and optimized critical computational paths in both libraries. For \textit{NUPunkt}, we employed profile-guided optimizations of core tokenization routines and implemented memory-efficient data structures. For \textit{CharBoundary}, we conducted systematic hyperparameter searches to balance model complexity with speed, and implemented ONNX runtime optimization for inference. Both libraries achieve CPU-efficient performance without requiring GPU acceleration, making them suitable for deployment in restricted environments or large-scale deployments.
+

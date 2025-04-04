@@ -1,0 +1,92 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% Packages
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{array}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[breaklinks=true]{hyperref}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{stfloats}
+\usepackage{wrapfig}
+\usepackage{placeins}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Precise Legal Sentence Boundary Detection for Retrieval at Scale: NUPunkt and CharBoundary},
+    pdfauthor={Michael J. Bommarito II, Daniel Martin Katz, Jillian Bommarito},
+    pdfsubject={Legal Sentence Boundary Detection},
+    pdfkeywords={sentence boundary detection, legal text, NLP, nupunkt, charboundary}
+}
+
+% Code listing setup
+\lstset{
+    basicstyle=\ttfamily\small,
+    commentstyle=\color{green\!50\!black},
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    breaklines=true,
+    showstringspaces=false,
+    frame=single
+}
+
+\begin{document}
+
+\title{Precise Legal Sentence Boundary Detection\\
+for Retrieval at Scale: NUPunkt and CharBoundary}
+
+\author{
+    \IEEEauthorblockN{Michael J. Bommarito II}
+    \IEEEauthorblockA{ALEA Institute\thanks{Email: hello@aleainstitute.ai}}
+    \IEEEauthorblockA{Stanford CodeX}
+    \and
+    \IEEEauthorblockN{Daniel Martin Katz}
+    \IEEEauthorblockA{Illinois Tech - Chicago Kent Law}
+    \IEEEauthorblockA{Bucerius Law School}
+    \IEEEauthorblockA{ALEA Institute}
+    \IEEEauthorblockA{Stanford CodeX}
+    \and
+    \IEEEauthorblockN{Jillian Bommarito}
+    \IEEEauthorblockA{ALEA Institute}
+}
+
+
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\pagestyle{plain}
+
+% Paper body sections
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/methods}
+\input{sections/experimental_setup}
+\input{sections/results}
+\input{sections/conclusion}
+
+\section*{Acknowledgments}
+We drafted and revised this paper with the assistance of large language models.  All errors or omissions are our own.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references/references}
+
+\onecolumn
+\input{sections/appendix}
+
+\end{document}
+
