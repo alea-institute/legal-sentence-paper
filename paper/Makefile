@@ -1,7 +1,7 @@
 # Configuration
 MAIN_TEX := main.tex
 OUTPUT_PDF := $(MAIN_TEX:.tex=.pdf)
-BIB_FILE := references/references.bib
+BIB_FILE := main.bib
 LATEX_ENGINE := pdflatex
 BIBTEX_ENGINE := bibtex
 LATEXMK := latexmk
