@@ -128,6 +128,12 @@ Both libraries are available under the MIT license.
 - Daniel Martin Katz (Illinois Tech - Chicago Kent Law, Bucerius Law School, ALEA Institute, Stanford CodeX)
 - Jillian Bommarito (ALEA Institute)
 
+## Links
+
+- **Models on Hugging Face**: [https://huggingface.co/models?other=arxiv:2504.04131](https://huggingface.co/models?other=arxiv:2504.04131)
+- **Paper on Hugging Face**: [https://huggingface.co/papers/2504.04131](https://huggingface.co/papers/2504.04131)
+- **Dataset on Hugging Face**: [https://huggingface.co/datasets/alea-institute/alea-legal-benchmark-sentence-paragraph-boundaries](https://huggingface.co/datasets/alea-institute/alea-legal-benchmark-sentence-paragraph-boundaries)
+
 ## Citation
 
 ```
